@@ -33,7 +33,7 @@ namespace model;
 
 final class Account {
     // FIELDS
-    private const BASE_YEARS_OLD = 18;
+    private static int $BASE_YEARS_OLD = 18;
 
     private int $idAccount;
     private string $lastName;
@@ -60,7 +60,7 @@ final class Account {
         $this->firstName = $firstName;
         $this->biography = $bio;
 
-        $this->yearsOld = ($yearsOld > 0) ? $yearsOld : self::BASE_YEARS_OLD;
+        $this->yearsOld = ($yearsOld > 0) ? $yearsOld : Account::$BASE_YEARS_OLD;
     }
 
 
