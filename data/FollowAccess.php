@@ -1,6 +1,6 @@
 <?php
 /**
-@file     data/AccountAccess.php
+@file     data/FollowAccess.php
 @author   Florian Lopitaux
 @version  0.1
 @summary  Class to interact with the Follow sql table.
@@ -30,6 +30,8 @@ This banner notice must not be removed.
  */
 
 namespace data;
+
+require_once 'DataAccess.php';
 
 final class FollowAccess extends DataAccess {
     // CONSTRUCTOR
