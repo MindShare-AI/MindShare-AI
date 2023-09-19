@@ -29,3 +29,24 @@ This banner notice must not be removed.
 -------------------------------------------------------------------------
  */
 
+header('Content-Type: application/json');
+$request_method = $_SERVER['REQUEST_METHOD'];
+
+// Loads the .ini file
+$db_accounts = parse_ini_file('db_account.ini');
+
+if (!$db_accounts) { // file doesn't found or not parsable
+    http_response_code(500);
+    echo json_encode([]);
+    die();
+}
+
+// parse the url to get the uri parameters and know which methods called
+$uriParameters = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+array_shift($uriParameters); // remove first element always empty
+
+if (sizeof($uriParameters) < 2 || $uriParameters[0] != "api") {
+    http_response_code(404);
+    echo json_encode(array());
+    die();
+}
