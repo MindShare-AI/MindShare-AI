@@ -1,9 +1,9 @@
 <?php
 /**
-@file     data/PostAccess.php
+@file     data/ChatMessageAccess.php
 @author   Florian Lopitaux
 @version  0.1
-@summary  Class to interact with the Post sql table.
+@summary  Class to interact with the ChatMessage sql table.
 
 -------------------------------------------------------------------------
 
@@ -33,10 +33,10 @@ namespace data;
 
 require_once 'DataAccess.php';
 
-use model\Post;
-require_once 'model/Post.php';
+use model\ChatMessage;
+require_once 'model/ChatMessage.php';
 
-final class PostAccess extends DataAccess {
+final class ChatMessageAccess extends DataAccess {
     // CONSTRUCTOR
     /**
      * The constructor to instantiate an PostAccess object.
@@ -52,54 +52,34 @@ final class PostAccess extends DataAccess {
             die();
         }
 
-        parent::__construct($db_accounts['post_identifiers'], $db_accounts['post_password']);
+        parent::__construct($db_accounts['device_identifiers'], $db_accounts['device_password']);
     }
 
 
     // METHODS
     /**
-     * Returns all posts registered in the database.
-     *
-     * @return array The posts.
-     */
-    public function getAllPosts() : array {
-        $posts = array();
-
-        // send sql request
-        $this->prepareQuery('SELECT * FROM POST');
-        $this->executeQuery(array());
-
-        // get the response
-        $result = $this->getQueryResult();
-
-        foreach ($result as $row) {
-            $posts[] = new Post($row['id_post'], $row['id_account'], $row['message'], $row['send_date']);
-        }
-
-        return $posts;
-    }
-
-    /**
-     * Returns all posts sent by a given account.
+     * Returns all messages between an account and a user.
      *
      * @param int $idAccount The identifier of the account.
+     * @param int $idDevice The identifier of the user's device.
      *
-     * @return array All posts sent.
+     * @return array All messages of the conversation.
      */
-    public function getPostsOfAccount(int $idAccount) : array {
-        $posts = array();
+    public function getConversation(int $idAccount, int $idDevice) : array {
+        $conversation = array();
 
-        // send sql request
-        $this->prepareQuery('SELECT * FROM POST WHERE id_account = ?');
-        $this->executeQuery(array($idAccount));
+        // send sql server
+        $this->prepareQuery('SELECT * FROM CHATMESSAGE WHERE id_account = ? AND id_device = ?');
+        $this->executeQuery(array($idAccount, $idDevice));
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $posts = new Post($row['id_post'], $row['id_account'], $row['message'], $row['send_date']);
+            $conversation[] = new ChatMessage($row['id_message'], $row['id_sender'], $row['id_receiver'],
+                $row['message'], $row['send_date']);
         }
 
-        return $posts;
+        return $conversation;
     }
 }
