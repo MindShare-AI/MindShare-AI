@@ -61,7 +61,7 @@ abstract class DataAccess {
 
     // DESTRUCTOR
     /**
-     * The destructor of the DataAccess class. It close the connexion to the database.
+     * The destructor of the DataAccess class. It closes the connexion to the database.
      */
     public function __destruct() {
         $this->dbh = null;

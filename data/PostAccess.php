@@ -1,9 +1,9 @@
 <?php
 /**
-@file     data/AccountAccess.php
+@file     data/PostAccess.php
 @author   Florian Lopitaux
 @version  0.1
-@summary  Class to interact with the Account sql table.
+@summary  Class to interact with the Post sql table.
 
 -------------------------------------------------------------------------
 
@@ -31,15 +31,13 @@ This banner notice must not be removed.
 
 namespace data;
 
-require_once 'DataAccess.php';
+use model\Post;
+require_once 'model/Post.php';
 
-use model\Account;
-require_once 'model/Account.php';
-
-final class AccountAccess extends DataAccess {
+final class PostAccess extends DataAccess {
     // CONSTRUCTOR
     /**
-     * The constructor to instantiate an AccountAccess object.
+     * The constructor to instantiate an PostAccess object.
      * Connect with the database.
      */
     public function __construct() {
@@ -52,54 +50,54 @@ final class AccountAccess extends DataAccess {
             die();
         }
 
-        parent::__construct($db_accounts['user_identifiers'], $db_accounts['user_password']);
+        parent::__construct($db_accounts['post_identifiers'], $db_accounts['post_password']);
     }
 
 
     // METHODS
     /**
-     * Returns all accounts registered in the database.
+     * Returns all posts registered in the database.
      *
-     * @return array The accounts registered.
+     * @return array The posts.
      */
-    public function getAllAccounts() : array {
-        $accounts = array();
+    public function getAllPosts() : array {
+        $posts = array();
 
         // send sql request
-        $this->prepareQuery('SELECT * FROM Account');
+        $this->prepareQuery('SELECT * FROM POST');
         $this->executeQuery(array());
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $accounts[] = new Account($result['id_account'],
-                $result['last_name'],
-                $result['first_name'],
-                $result['years_old'],
-                $result['biography']);
+            $posts[] = new Post($row['id_post'], $row['id_account'], $row['message'], $row['send_date']);
         }
 
-        return $accounts;
+        return $posts;
     }
 
     /**
-     * Returns an Account object linked with the given identifier.
+     * Returns all posts sent by a given account.
      *
-     * @param int $idAccount The identifier (PRIMARY KEY) of the account that we want get the data.
+     * @param int $idAccount The identifier of the account.
      *
-     * @return Account The account object that contains the data.
+     * @return array All posts sent.
      */
-    public function getAccount(int $idAccount) : Account {
+    public function getPostsOfAccount(int $idAccount) : array {
+        $posts = array();
+
         // send sql request
-        $this->prepareQuery('SELECT * FROM Account WHERE id_account = ?');
+        $this->prepareQuery('SELECT * FROM POST WHERE id_account = ?');
         $this->executeQuery(array($idAccount));
 
         // get the response
-        $result = $this->getQueryResult()[0];
+        $result = $this->getQueryResult();
 
-        return new Account($result['id_account'],
-                           $result['last_name'], $result['first_name'],
-                           $result['years_old'], $result['biography']);
+        foreach ($result as $row) {
+            $posts = new Post($row['id_post'], $row['id_account'], $row['message'], $row['send_date']);
+        }
+
+        return $posts;
     }
 }
