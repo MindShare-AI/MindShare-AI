@@ -69,7 +69,7 @@ final class ChatMessageAccess extends DataAccess {
         $conversation = array();
 
         // send sql server
-        $this->prepareQuery('SELECT * FROM CHATMESSAGE WHERE id_account = ? AND id_device = ?');
+        $this->prepareQuery('SELECT * FROM CHATMESSAGE WHERE id_account = ? AND id_device = ? ORDER BY send_date');
         $this->executeQuery(array($idAccount, $idDevice));
 
         // get the response

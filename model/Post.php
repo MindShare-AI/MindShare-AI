@@ -39,6 +39,7 @@ final class Post {
     private int $idAccount;
     private string $message;
     private DateTime $sendDate;
+    private int $idPostCommented;
 
 
     // CONSTRUCTOR
@@ -49,14 +50,17 @@ final class Post {
      * @param int $idAccount The id (FOREIGN KEY) of the account that sent the post.
      * @param string $message The text message of the post.
      * @param DateTime $date The date when the post was published.
+     * @param int|null $idPostCommented The post identifier (FOREIGN KEY) of the post
+     *                                  if this post is a comment in response to another post.
      */
     public function __construct(int $idPost, int $idAccount,
-                                string $message, DateTime $date) {
+                                string $message, DateTime $date, int $idPostCommented = null) {
 
         $this->idPost = $idPost;
         $this->idAccount = $idAccount;
         $this->message = $message;
         $this->sendDate = $date;
+        $this->idPostCommented = $idPostCommented;
     }
 
 
@@ -97,6 +101,16 @@ final class Post {
         return $this->sendDate;
     }
 
+    /**
+     * This method is the getter of the 'idPostCommented' attribute.
+     *
+     * @return int|null The post identifier (FOREIGN KEY) of the post
+     *                  if this post is a comment in response to another post.
+     */
+    public function getIdPostCommented() : ?int {
+        return $this->idPostCommented;
+    }
+
 
     // SETTERS
     /**
@@ -133,5 +147,14 @@ final class Post {
      */
     public function setSendDate(DateTime $sendDate): void {
         $this->sendDate = $sendDate;
+    }
+
+    /**
+     * This method is the setter of the 'idPostCommented' attribute.
+     *
+     * @param int $idPost The post identifier (FOREIGN KEY) of the "original post".
+     */
+    public function setIdPostCommented(int $idPost): void {
+        $this->idPostCommented = $idPost;
     }
 }

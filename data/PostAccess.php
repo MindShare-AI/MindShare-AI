@@ -73,7 +73,8 @@ final class PostAccess extends DataAccess {
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $posts[] = new Post($row['id_post'], $row['id_account'], $row['message'], $row['send_date']);
+            $posts[] = new Post($row['id_post'], $row['id_account'],
+                $row['message'], $row['send_date'], $row['id_post_commented']);
         }
 
         return $posts;
@@ -97,9 +98,35 @@ final class PostAccess extends DataAccess {
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $posts = new Post($row['id_post'], $row['id_account'], $row['message'], $row['send_date']);
+            $posts = new Post($row['id_post'], $row['id_account'],
+                $row['message'], $row['send_date'], $row['id_post_commented']);
         }
 
         return $posts;
+    }
+
+    /**
+     * Returns all comments of a specified post.
+     *
+     * @param int $idPost The identifier of the past that we want it comments.
+     *
+     * @return array The comments of the post.
+     */
+    public function getCommentsOfPost(int $idPost) : array {
+        $comments = array();
+
+        // send sql request
+        $this->prepareQuery('SELECT * FROM POST WHERE id_post_commented = ?');
+        $this->executeQuery(array($idPost));
+
+        // get the response
+        $result = $this->getQueryResult();
+
+        foreach ($result as $row) {
+            $comments = new Post($row['id_post'], $row['id_account'],
+                $row['message'], $row['send_date'], $row['id_post_commented']);
+        }
+
+        return $comments;
     }
 }
