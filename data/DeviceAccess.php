@@ -37,25 +37,6 @@ use model\Device;
 require_once 'model/Device.php';
 
 final class DeviceAccess extends DataAccess {
-    // CONSTRUCTOR
-    /**
-     * The constructor to instantiate a DeviceAccess object.
-     * Connect with the database.
-     */
-    public function __construct() {
-        // Loads the .ini file
-        $db_accounts = parse_ini_file('db_account.ini');
-
-        if (!$db_accounts) { // file doesn't found or not parsable
-            http_response_code(500);
-            echo json_encode([]);
-            die();
-        }
-
-        parent::__construct($db_accounts['device_identifiers'], $db_accounts['device_password']);
-    }
-
-
     // METHODS
     /**
      * Returns all devices registered in the database.
@@ -82,11 +63,11 @@ final class DeviceAccess extends DataAccess {
     /**
      * Returns the data of a given device.
      *
-     * @param int $idDevice The identifier of the device.
+     * @param string $idDevice The identifier of the device.
      *
      * @return Device|null The device's data or null if the device doesn't exist.
      */
-    public function getDevice(int $idDevice) : ?Device {
+    public function getDevice(string $idDevice) : ?Device {
         // send sql request
         $this->prepareQuery('SELECT * FROM DEVICE WHERE uuid = ?');
         $this->executeQuery(array($idDevice));
@@ -104,11 +85,11 @@ final class DeviceAccess extends DataAccess {
     /**
      * Checks if a given device exist in the database.
      *
-     * @param int $idDevice The uuid of the device to check.
+     * @param string $idDevice The uuid of the device to check.
      *
      * @return bool The boolean response.
      */
-    public function isExist(int $idDevice) : bool {
+    public function isExist(string $idDevice) : bool {
         // send sql request
         $this->prepareQuery('SELECT * FROM DEVICE WHERE uuid = ?');
         $this->executeQuery(array($idDevice));
@@ -117,5 +98,18 @@ final class DeviceAccess extends DataAccess {
         $result = $this->getQueryResult();
 
         return count($result) > 0;
+    }
+
+    /**
+     * Inserts a given device in the database.
+     *
+     * @param Device $device The new device to insert.
+     */
+    public function registerDevice(Device $device) : void {
+        // send sql request
+        $this->prepareQuery('INSERT INTO DEVICE VALUES ?');
+        $this->executeQuery(array($device->getUuid()));
+
+        $this->closeQuery();
     }
 }

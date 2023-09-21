@@ -37,25 +37,6 @@ use model\Post;
 require_once 'model/Post.php';
 
 final class PostAccess extends DataAccess {
-    // CONSTRUCTOR
-    /**
-     * The constructor to instantiate an PostAccess object.
-     * Connect with the database.
-     */
-    public function __construct() {
-        // Loads the .ini file
-        $db_accounts = parse_ini_file('db_account.ini');
-
-        if (!$db_accounts) { // file doesn't found or not parsable
-            http_response_code(500);
-            echo json_encode([]);
-            die();
-        }
-
-        parent::__construct($db_accounts['post_identifiers'], $db_accounts['post_password']);
-    }
-
-
     // METHODS
     /**
      * Returns all posts registered in the database.

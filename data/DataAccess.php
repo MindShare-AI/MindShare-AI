@@ -47,7 +47,7 @@ abstract class DataAccess {
      * @param string $user The user identifier to connect to the database.
      * @param string $password The password to connect to the database.
      */
-    protected function __construct(string $user, string $password) {
+    public function __construct(string $user, string $password) {
         try {
             $this->dbh = new \PDO('mysql:host=' . DataAccess::$HOST . ';dbname=' . DataAccess::$DATA_BASE,
                 $user, $password);

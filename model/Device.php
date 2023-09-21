@@ -33,16 +33,16 @@ namespace model;
 
 final class Device {
     // FIELDS
-    private int $uuid;
+    private string $uuid;
 
 
     // CONSTRUCTOR
     /**
      * The constructor to instantiate a Device object.
      *
-     * @param int $id The uuid (PRIMARY KEY) of the device.
+     * @param string $id The uuid (PRIMARY KEY) of the device.
      */
-    public function __construct(int $id) {
+    public function __construct(string $id) {
         $this->uuid = $id;
     }
 
@@ -53,7 +53,7 @@ final class Device {
      *
      * @return int The identifier of the device.
      */
-    public function getUuid(): int {
+    public function getUuid(): string {
         return $this->uuid;
     }
 
@@ -62,9 +62,24 @@ final class Device {
     /**
      * This method is the setter of the 'uuid' attribute.
      *
-     * @param int $uuid The identifier of the device.
+     * @param string $uuid The identifier of the device.
      */
-    public function setUuid(int $uuid): void {
+    public function setUuid(string $uuid): void {
         $this->uuid = $uuid;
+    }
+
+
+    // METHODS
+    /**
+     * Returns the model representation of the object.
+     *
+     * @return string The json string to send.
+     */
+    public function toJson() : string {
+        $object = array(
+          'uuid' => $this->uuid
+        );
+
+        return json_encode($object);
     }
 }

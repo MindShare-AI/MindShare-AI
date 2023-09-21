@@ -37,25 +37,6 @@ use model\ChatMessage;
 require_once 'model/ChatMessage.php';
 
 final class ChatMessageAccess extends DataAccess {
-    // CONSTRUCTOR
-    /**
-     * The constructor to instantiate an PostAccess object.
-     * Connect with the database.
-     */
-    public function __construct() {
-        // Loads the .ini file
-        $db_accounts = parse_ini_file('db_account.ini');
-
-        if (!$db_accounts) { // file doesn't found or not parsable
-            http_response_code(500);
-            echo json_encode([]);
-            die();
-        }
-
-        parent::__construct($db_accounts['device_identifiers'], $db_accounts['device_password']);
-    }
-
-
     // METHODS
     /**
      * Returns all messages between an account and a user.

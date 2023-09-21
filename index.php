@@ -29,8 +29,19 @@ This banner notice must not be removed.
 -------------------------------------------------------------------------
  */
 
+// Loads dependencies
+require_once 'service/deviceControl.php';
+
 header('Content-Type: application/json');
-$request_method = $_SERVER['REQUEST_METHOD'];
+
+// Loads the .ini file that contains the database identifiers
+$config = parse_ini_file('config.ini');
+
+if (!$config) { // file doesn't found or not parsable
+    http_response_code(500);
+    echo json_encode(array('response' => 'Internal problem'));
+    die();
+}
 
 // parse the url to get the uri parameters and know which methods called
 $uriParameters = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -38,6 +49,29 @@ array_shift($uriParameters); // remove first element always empty
 
 if (sizeof($uriParameters) < 2 || $uriParameters[0] != "api") {
     http_response_code(404);
-    echo json_encode(array());
+    echo json_encode(array('response' => 'Missing uri parameters'));
+    die();
+}
+
+$serviceCalled = "$uriParameters[1]Control";
+
+if (class_exists($serviceCalled)) {
+    $requestMethod = $_SERVER['REQUEST_METHOD'];
+
+    // get the authorization token to some restricted requests (requests that modify the database not just get)
+    $headers = getallheaders();
+
+    if (in_array('Authorization', $headers)) {
+        $headerToken = $headers['Authorization'];
+    } else {
+        $headerToken = null;
+    }
+
+    $controller = $serviceCalled($headerToken, $config, $requestMethod);
+    $controller->processRequest(array_slice($uriParameters, 2), $_POST, $_GET);
+
+} else {
+    http_response_code(400);
+    echo json_encode(array('response' => 'URI parameters not accepted'));
     die();
 }
