@@ -160,4 +160,18 @@ final class Account {
     public function setBiography(string $biography): void {
         $this->biography = $biography;
     }
+
+
+    // METHODS
+    public function toJson() : string {
+        $object = array(
+            'id_account' => $this->idAccount,
+            'last_name' => $this->lastName,
+            'first_name' => $this->firstName,
+            'years_old' => $this->yearsOld,
+            'biography' => $this->biography
+        );
+
+        return json_encode($object);
+    }
 }

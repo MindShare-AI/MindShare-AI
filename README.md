@@ -1,11 +1,13 @@
 # MindShare-API
 RESTFUL API to access to the database of the MindShare application
 
-## Protected Request
+## Request
+
 ### GET
 > - /device/{id}
-### POST
-> - /device |||| {'uuid' => 'id_device_to_add'}
+> - /follow/{id}
+> - /follow/stats/{id}
 
-### Free Access Request
-> 
+### POST
+> - /device |||| {'uuid' => [id_device_to_add]}
+> - /follow |||| {'follower' => [id_account], 'following' => [id_account]}

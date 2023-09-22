@@ -3,7 +3,7 @@
 @file     control/deviceControl
 @author   Florian Lopitaux
 @version  0.1
-@summary  Class to manage http request related to the device.
+@summary  Class to manage http request related to the devices.
 
 -------------------------------------------------------------------------
 
@@ -31,21 +31,19 @@ This banner notice must not be removed.
 
 namespace service;
 
-use data\{DeviceAccess};
-use model\Device;
+require_once 'BaseController.php';
 
+use data\{DeviceAccess};
 require_once 'data/DeviceAccess.php';
 
-final class deviceControl {
-    // FIELDS
-    private DeviceAccess $dbAccess;
-    private string $requestMethod;
+use model\Device;
+require_once 'model/Device.php';
 
-
+final class deviceControl extends BaseController {
     // CONSTRUCTOR
-    public function __construct(array $db_accounts, string $requestMethod) {
-        $this->dbAccess = new DeviceAccess($db_accounts['device_identifier'], $db_accounts['device_password']);
-        $this->requestMethod = $requestMethod;
+    public function __construct(array $config, string $requestMethod) {
+        parent::__construct($requestMethod);
+        $this->dbAccess = new DeviceAccess($config['device_identifier'], $config['device_password']);
     }
 
 
@@ -80,7 +78,7 @@ final class deviceControl {
             }
 
         } else {
-            http_response_code('404');
+            http_response_code(404);
             echo json_encode(array('response' => 'http request method not allowed for "/device"'));
         }
     }

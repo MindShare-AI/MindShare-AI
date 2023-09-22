@@ -107,7 +107,7 @@ final class DeviceAccess extends DataAccess {
      */
     public function registerDevice(Device $device) : void {
         // send sql request
-        $this->prepareQuery('INSERT INTO DEVICE VALUES ?');
+        $this->prepareQuery('INSERT INTO DEVICE VALUES (?)');
         $this->executeQuery(array($device->getUuid()));
 
         $this->closeQuery();

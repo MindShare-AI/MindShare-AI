@@ -67,7 +67,13 @@ if (class_exists($serviceCalled)) {
         $headerToken = null;
     }
 
-    $controller = $serviceCalled($headerToken, $config, $requestMethod);
+    if ($headerToken !== $config['api_token']) {
+        http_response_code(401);
+        echo json_encode(array('response' => 'Bad token'));
+        die();
+    }
+
+    $controller = $serviceCalled($config, $requestMethod);
     $controller->processRequest(array_slice($uriParameters, 2), $_POST, $_GET);
 
 } else {

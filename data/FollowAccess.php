@@ -118,4 +118,17 @@ final class FollowAccess extends DataAccess {
 
         return $result[0];
     }
+
+    /**
+     * Add a new entity in the Follow table.
+     *
+     * @param int $idFollower The account identifier of the account which follows.
+     * @param int $idFollowed The account identifier of the account which followed.
+     */
+    public function addFollowEntity(int $idFollower, int $idFollowed) : void {
+        $this->prepareQuery('INSERT INTO FOLLOW VALUES (?, ?)');
+        $this->executeQuery(array($idFollower, $idFollowed));
+
+        $this->closeQuery();
+    }
 }
