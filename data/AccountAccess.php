@@ -54,11 +54,7 @@ final class AccountAccess extends DataAccess {
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $accounts[] = new Account($result['id_account'],
-                $result['last_name'],
-                $result['first_name'],
-                $result['years_old'],
-                $result['biography']);
+            $accounts[] = Account::fromArray($row);
         }
 
         return $accounts;
@@ -69,18 +65,121 @@ final class AccountAccess extends DataAccess {
      *
      * @param int $idAccount The identifier (PRIMARY KEY) of the account that we want get the data.
      *
-     * @return Account The account object that contains the data.
+     * @return Account|null The account object that contains the data.
+     *                      Or null if no object found.
      */
-    public function getAccount(int $idAccount) : Account {
+    public function getAccountByID(int $idAccount) : ?Account {
         // send sql request
         $this->prepareQuery('SELECT * FROM Account WHERE id_account = ?');
         $this->executeQuery(array($idAccount));
 
         // get the response
-        $result = $this->getQueryResult()[0];
+        $result = $this->getQueryResult();
 
-        return new Account($result['id_account'],
-                           $result['last_name'], $result['first_name'],
-                           $result['years_old'], $result['biography']);
+        if (count($result) > 0) {
+            return Account::fromArray($result[0]);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns an Account object linked with the given identifier.
+     *
+     * @param string $lastName The last name of the account.
+     * @param string $firstName The first name of the account.
+     *
+     * @return Account|null The account object that contains the data.
+     *                      Or null if no object found.
+     */
+    public function getAccountByName(string $lastName, string $firstName) : ?Account {
+        // send sql request
+        $this->prepareQuery('SELECT * FROM Account WHERE last_name = ? AND first_name = ?');
+        $this->executeQuery(array($lastName, $firstName));
+
+        // get the response
+        $result = $this->getQueryResult();
+
+        if (count($result) > 0) {
+            return Account::fromArray($result[0]);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Inserts a new entity in the Account table.
+     *
+     * @param array $accountData The data to insert to the new account.
+     */
+    public function addAccount(array $accountData) : void {
+        $lastName = $accountData['last_name'];
+        $firstName = $accountData['first_name'];
+        $years_old = in_array('years_old', $accountData) ? $accountData['years_old'] : 0;
+        $biography = in_array('biography', $accountData) ? $accountData['biography'] : '';
+
+        $this->prepareQuery('INSERT INTO ACCOUNT (last_name, first_name, years_old, biography) VALUES (?, ?, ?, ?)');
+        $this->executeQuery(array($lastName, $firstName, $years_old, $biography));
+        $this->closeQuery();
+    }
+
+    /**
+     * Removes account linked with the given identifier.
+     *
+     * @param int $idAccount The identifier of the account to remove.
+     *
+     * @return bool A boolean value to know if the request has success.
+     */
+    public function deleteAccountByID(int $idAccount) : bool {
+        $account = $this->getAccountByID($idAccount);
+
+        if ($account === null) {
+            return false;
+        } else {
+            $this->deleteAccount($account);
+            return true;
+        }
+    }
+
+    /**
+     * Removes account linked with the given name.
+     *
+     * @param string $lastName The last name of the account to remove.
+     * @param string $firstName The first name of the account to remove.
+     *
+     * @return bool A boolean value to know if the request has success.
+     */
+    public function deleteAccountByName(string $lastName, string $firstName) : bool {
+        $account = $this->getAccountByName($lastName, $firstName);
+
+        if ($account === null) {
+            return false;
+        } else {
+            $this->deleteAccount($account);
+            return true;
+        }
+    }
+
+
+    // PRIVATE METHODS
+    /**
+     * Make SQL requests to remove an account and all entities linked with the account.
+     *
+     * @param Account $account The account model.
+     */
+    private function deleteAccount(Account $account) : void {
+        // delete account
+        $this->prepareQuery('DELETE FROM ACCOUNT WHERE id_account = ?');
+        $this->executeQuery(array($account->getIdAccount()));
+        $this->closeQuery();
+
+        // delete account dependencies in other tables
+        $this->prepareQuery('DELETE FROM POST WHERE id_account = ?');
+        $this->executeQuery(array($account->getIdAccount()));
+        $this->closeQuery();
+
+        $this->prepareQuery('DELETE FROM CHATMESSAGE WHERE id_sender = ? OR id_receiver = ?');
+        $this->executeQuery(array($account->getIdAccount(), $account->getIdAccount()));
+        $this->closeQuery();
     }
 }

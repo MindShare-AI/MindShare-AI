@@ -51,7 +51,7 @@ final class Device {
     /**
      * This method is the getter of the 'uuid' attribute.
      *
-     * @return int The identifier of the device.
+     * @return string The identifier of the device.
      */
     public function getUuid(): string {
         return $this->uuid;

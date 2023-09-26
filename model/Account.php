@@ -163,6 +163,11 @@ final class Account {
 
 
     // METHODS
+    /**
+     * Converts this object to json format to send by http request.
+     *
+     * @return string The json object.
+     */
     public function toJson() : string {
         $object = array(
             'id_account' => $this->idAccount,
@@ -173,5 +178,22 @@ final class Account {
         );
 
         return json_encode($object);
+    }
+
+
+    // STATIC METHODS
+    /**
+     * Create an account object from the sql array.
+     *
+     * @param array $entity the sql entity.
+     *
+     * @return Account The account object.
+     */
+    public static function fromArray(array $entity) : Account {
+        return new Account($entity['id_account'],
+            $entity['last_name'],
+            $entity['first_name'],
+            $entity['years_old'],
+            $entity['biography']);
     }
 }
