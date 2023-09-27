@@ -36,7 +36,7 @@ require_once 'BaseController.php';
 use data\AccountAccess;
 require_once 'data/AccountAccess.php';
 
-final class accountControl extends BaseController {
+final class AccountControl extends BaseController {
     // CONSTRUCTOR
     public function __construct(array $config, string $requestMethod) {
         parent::__construct($requestMethod);
@@ -45,7 +45,7 @@ final class accountControl extends BaseController {
 
 
     // PUBLIC METHODS
-    public function processRequest(array $uriParameters, array $postParams, array $getParams) : void {
+    public function processRequest(array $uriParameters, array $postParams) : void {
         if ($this->requestMethod === 'GET') {
             if (count($uriParameters) > 2) {
                 http_response_code(400);
@@ -67,7 +67,7 @@ final class accountControl extends BaseController {
 
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'wrong post parameters'));
+                echo json_encode(array('response' => 'Bad uri parameters format'));
                 die();
             }
         } else {
@@ -87,7 +87,7 @@ final class accountControl extends BaseController {
         $response = array(200, array());
 
         foreach ($accounts as $currentAccount) {
-            $response[1] = $currentAccount->toJson();
+            $response[1][] = $currentAccount->toArray();
         }
 
         return $response;

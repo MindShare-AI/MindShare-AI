@@ -1,6 +1,6 @@
 <?php
 /**
-@file     control/deviceControl
+@file     control/DeviceControl
 @author   Florian Lopitaux
 @version  0.1
 @summary  Class to manage http request related to the devices.
@@ -39,7 +39,7 @@ require_once 'data/DeviceAccess.php';
 use model\Device;
 require_once 'model/Device.php';
 
-final class deviceControl extends BaseController {
+final class DeviceControl extends BaseController {
     // CONSTRUCTOR
     public function __construct(array $config, string $requestMethod) {
         parent::__construct($requestMethod);
@@ -48,7 +48,7 @@ final class deviceControl extends BaseController {
 
 
     // PUBLIC METHODS
-    public function processRequest(array $uriParameters, array $postParams, array $getParams) : void {
+    public function processRequest(array $uriParameters, array $postParams) : void {
         if ($this->requestMethod === 'GET') {
             if (count($uriParameters) !== 1) {
                 $device = $this->dbAccess->getDevice($uriParameters[0]);

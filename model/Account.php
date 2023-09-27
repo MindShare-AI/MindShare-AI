@@ -164,20 +164,18 @@ final class Account {
 
     // METHODS
     /**
-     * Converts this object to json format to send by http request.
+     * Converts this object to array format to send by http request.
      *
-     * @return string The json object.
+     * @return array The object in array format.
      */
-    public function toJson() : string {
-        $object = array(
+    public function toArray() : array {
+        return array(
             'id_account' => $this->idAccount,
             'last_name' => $this->lastName,
             'first_name' => $this->firstName,
             'years_old' => $this->yearsOld,
             'biography' => $this->biography
         );
-
-        return json_encode($object);
     }
 
 

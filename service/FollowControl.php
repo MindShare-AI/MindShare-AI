@@ -1,6 +1,6 @@
 <?php
 /**
-@file     control/followControl
+@file     control/FollowControl
 @author   Florian Lopitaux
 @version  0.1
 @summary  Class to manage http request related to the follows.
@@ -37,7 +37,7 @@ use data\{AccountAccess, FollowAccess};
 require_once 'data/AccountAccess.php';
 require_once 'data/FollowAccess.php';
 
-final class followControl extends BaseController {
+final class FollowControl extends BaseController {
     // FIELDS
     private AccountAccess $accountAccess;
 
@@ -52,23 +52,18 @@ final class followControl extends BaseController {
 
 
     // PUBLIC METHODS
-    public function processRequest(array $uriParameters, array $postParams, array $getParams): void {
+    public function processRequest(array $uriParameters, array $postParams): void {
         if ($this->requestMethod === 'GET') {
             if (count($uriParameters) === 2 && $uriParameters[0] === 'stats') {
                 $response = $this->statsRequest($uriParameters[1]);
 
-                http_response_code($response[0]);
-                echo $response[1];
-
             } else if (count($uriParameters) === 1) {
                 $response = $this->getRequest($uriParameters[1]);
-
-                http_response_code($response[0]);
-                echo $response[1];
 
             } else {
                 http_response_code(400);
                 echo json_encode(array('response' => 'Bad uri parameters format'));
+                die();
             }
         } else if ($this->requestMethod === 'POST') {
             if (count($postParams) === 2 &&
@@ -77,23 +72,25 @@ final class followControl extends BaseController {
 
                 $response = $this->addFollowLink($postParams['follower'], $postParams['following']);
 
-                http_response_code($response[0]);
-                echo $response[1];
-
             } else {
                 http_response_code(400);
                 echo json_encode(array('response' => 'wrong post parameters'));
+                die();
             }
 
         } else {
             http_response_code(404);
             echo json_encode(array('response' => 'http request method not allowed for "/follow"'));
+            die();
         }
+
+        http_response_code($response[0]);
+        echo json_encode($response[1]);
     }
 
 
     // PRIVATE METHODS
-    public function statsRequest(int $idAccount) : array {
+    private function statsRequest(int $idAccount) : array {
         $followersCount = $this->dbAccess->getFollowersCount($idAccount);
         $followingCount = $this->dbAccess->getFollowingAccounts($idAccount);
 
@@ -102,10 +99,10 @@ final class followControl extends BaseController {
             'following' => $followingCount
         );
 
-        return array(200, json_encode($response));
+        return array(200, $response);
     }
 
-    public function getRequest(int $idAccount) : array {
+    private function getRequest(int $idAccount) : array {
         $followers = $this->dbAccess->getFollowers($idAccount);
         $following = $this->dbAccess->getFollowingAccounts($idAccount);
 
@@ -115,21 +112,20 @@ final class followControl extends BaseController {
         );
 
         foreach ($followers as $idAccount) {
-            $currentAccount = $this->accountAccess->getAccount($idAccount);
+            $currentAccount = $this->accountAccess->getAccountByID($idAccount);
             $response['followers'][] = $currentAccount->toJson();
         }
 
         foreach ($following as $idAccount) {
-            $currentAccount = $this->accountAccess->getAccount($idAccount);
+            $currentAccount = $this->accountAccess->getAccountByID($idAccount);
             $response['following'][] = $currentAccount;
         }
 
-        return array(200, json_encode($response));
+        return array(200, $response);
     }
 
-    public function addFollowLink(int $idFollower, int $idFollowed) : array {
+    private function addFollowLink(int $idFollower, int $idFollowed) : array {
         $this->dbAccess->addFollowEntity($idFollower, $idFollowed);
-
-        return array(200, json_encode(array('response' => 'ok')));
+        return array(200, array('response' => 'ok'));
     }
 }

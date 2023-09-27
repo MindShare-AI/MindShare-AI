@@ -157,4 +157,38 @@ final class Post {
     public function setIdPostCommented(int $idPost): void {
         $this->idPostCommented = $idPost;
     }
+
+
+    // PUBLIC METHODS
+    /**
+     * Converts this object to array format to send by http request.
+     *
+     * @return array The object in array format.
+     */
+    public function toArray() : array {
+        return array(
+            'id_post' => $this->idPost,
+            'id_account' => $this->idAccount,
+            'message' => $this->message,
+            'send_date' => $this->sendDate,
+            'id_post_commented' => $this->idPostCommented
+        );
+    }
+
+
+    // STATIC METHODS
+    /**
+     * Create an account object from the sql array.
+     *
+     * @param array $entity the sql entity.
+     *
+     * @return Post The post object.
+     */
+    public static function fromArray(array $entity) : Post {
+        return new Post($entity['id_post'],
+            $entity['id_account'],
+            $entity['message'],
+            $entity['send_date'],
+            $entity['id_post_commented']);
+    }
 }

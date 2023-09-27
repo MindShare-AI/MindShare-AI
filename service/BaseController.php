@@ -47,7 +47,7 @@ abstract class BaseController {
 
 
     // METHODS
-    public function processRequest(array $uriParameters, array $postParams, array $getParams) : void {
+    public function processRequest(array $uriParameters, array $postParams) : void {
 
     }
 }

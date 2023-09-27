@@ -30,7 +30,11 @@ This banner notice must not be removed.
  */
 
 // Loads dependencies
-require_once 'service/deviceControl.php';
+use service\{AccountControl, DeviceControl, FollowControl, PostControl};
+require_once 'service/AccountControl.php';
+require_once 'service/DeviceControl.php';
+require_once 'service/FollowControl.php';
+require_once 'service/PostControl.php';
 
 header('Content-Type: application/json');
 
@@ -53,6 +57,7 @@ if (sizeof($uriParameters) < 2 || $uriParameters[0] != "api") {
     die();
 }
 
+$uriParameters[1] = strtoupper(substr($uriParameters[1], 0, 1)) . substr($uriParameters[1], 1);
 $serviceCalled = "$uriParameters[1]Control";
 
 if (class_exists($serviceCalled)) {
@@ -74,7 +79,7 @@ if (class_exists($serviceCalled)) {
     }
 
     $controller = $serviceCalled($config, $requestMethod);
-    $controller->processRequest(array_slice($uriParameters, 2), $_POST, $_GET);
+    $controller->processRequest(array_slice($uriParameters, 2), $_POST);
 
 } else {
     http_response_code(400);

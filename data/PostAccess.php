@@ -54,33 +54,45 @@ final class PostAccess extends DataAccess {
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $posts[] = new Post($row['id_post'], $row['id_account'],
-                $row['message'], $row['send_date'], $row['id_post_commented']);
+            $posts[] = Post::fromArray($row);
         }
 
         return $posts;
     }
 
+    public function getPost(int $idPost) : ?Post {
+        $this->prepareQuery('SELECT * FROM POST WHERE id_post = ?');
+        $this->executeQuery(array($idPost));
+
+        $result = $this->getQueryResult();
+
+        if (count($result) === 0) {
+            return null;
+        } else {
+            return Post::fromArray($result[0]);
+        }
+    }
+
     /**
      * Returns all posts sent by a given account.
      *
-     * @param int $idAccount The identifier of the account.
+     * @param string $lastName The last name of the account.
+     * @param string $firstName The first name of the account.
      *
      * @return array All posts sent.
      */
-    public function getPostsOfAccount(int $idAccount) : array {
+    public function getPostsOfAccount(string $lastName, string $firstName) : array {
         $posts = array();
 
         // send sql request
-        $this->prepareQuery('SELECT * FROM POST WHERE id_account = ?');
-        $this->executeQuery(array($idAccount));
+        $this->prepareQuery('SELECT * FROM POST WHERE last_name = ? AND first_name = ?');
+        $this->executeQuery(array($lastName, $firstName));
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $posts = new Post($row['id_post'], $row['id_account'],
-                $row['message'], $row['send_date'], $row['id_post_commented']);
+            $posts = Post::fromArray($row);
         }
 
         return $posts;
@@ -104,10 +116,57 @@ final class PostAccess extends DataAccess {
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $comments = new Post($row['id_post'], $row['id_account'],
-                $row['message'], $row['send_date'], $row['id_post_commented']);
+            $comments = Post::fromArray($row);
         }
 
         return $comments;
+    }
+
+    public function getStatsOfAccount(int $idAccount) : array {
+        $this->prepareQuery('SELECT COUNT(*) FROM POST WHERE id_account = ? AND id_post_commented IS NULL');
+        $this->executeQuery(array($idAccount));
+
+        $nbPosts = $this->getQueryResult();
+
+        $this->prepareQuery('SELECT COUNT(*) FROM POST WHERE id_account = ? AND id_post_commented IS NOT NULL');
+        $this->executeQuery(array($idAccount));
+
+        $nbCommentaries = $this->getQueryResult();
+
+        return array('nb_posts' => $nbPosts, 'nb_comments' => $nbCommentaries);
+    }
+
+    public function addPost(array $postData) : void {
+        $message = in_array('message', $postData) ? $postData['message'] : '';
+        $sendDate = in_array('send_date', $postData) ? $postData['send_date'] : date('Y-m-d');
+        $idAccount = $postData['id_account'];
+        $idPostCommented = in_array('id_post_commented', $postData) ? $postData['id_post_commented'] : null;
+
+        $this->prepareQuery('INSERT INTO POST (id_account, message, send_date, id_post_commented) VALUES (?, ?, ?, ?)');
+        $this->executeQuery(array($idAccount, $message, $sendDate, $idPostCommented));
+        $this->closeQuery();
+    }
+
+    public function deletePost(int $idPost) : bool {
+        // check if the post exists
+        $this->prepareQuery('SELECT * FROM POST WHERE id_post = ?');
+        $this->executeQuery(array($idPost));
+
+        $result = $this->getQueryResult();
+
+        if (count($result) === 0) { // post doesn't exist
+            return false;
+        }
+
+        // delete the post and there commentaries
+        $this->prepareQuery('DELETE FROM POST WHERE id_post = ?');
+        $this->executeQuery(array($idPost));
+        $this->closeQuery();
+
+        $this->prepareQuery('DELETE FROM POST WHERE id_post_commented = ?');
+        $this->executeQuery(array($idPost));
+        $this->closeQuery();
+
+        return true;
     }
 }
