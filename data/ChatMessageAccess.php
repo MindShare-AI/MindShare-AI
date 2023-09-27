@@ -50,8 +50,11 @@ final class ChatMessageAccess extends DataAccess {
         $conversation = array();
 
         // send sql server
-        $this->prepareQuery('SELECT * FROM CHATMESSAGE WHERE id_account = ? AND id_device = ? ORDER BY send_date');
-        $this->executeQuery(array($idAccount, $idDevice));
+        $this->prepareQuery('SELECT * FROM CHATMESSAGE
+            WHERE (id_sender = ? AND id_receiver = ?)
+            OR (id_sender = ? AND id_receiver = ?)
+            ORDER BY send_date');
+        $this->executeQuery(array($idAccount, $idDevice, $idDevice, $idAccount));
 
         // get the response
         $result = $this->getQueryResult();
@@ -62,5 +65,41 @@ final class ChatMessageAccess extends DataAccess {
         }
 
         return $conversation;
+    }
+
+    public function addMessage(array $messageData) : void {
+        $message = (in_array('message', $messageData)) ? $messageData['message'] : '';
+        $date = in_array('send_date', $messageData) ? $messageData['send_date'] : date('Y-m-d');
+
+        $this->prepareQuery('INSERT INTO CHATMESSAGE (message, send_date, id_account, id_device)
+            VALUES (?, ?, ?, ?)');
+        $this->executeQuery(array($message, $date, $messageData['id_account'], $messageData['id_device']));
+
+        $this->closeQuery();
+    }
+
+    public function deleteMessage(int $idMessage) : bool {
+        $this->prepareQuery('SELECT COUNT(*) FROM CHATMESSAGE WHERE id_message = ?');
+        $this->executeQuery(array($idMessage));
+
+        $result = $this->getQueryResult()[0];
+        if ($result === 0) {
+            return false;
+        }
+
+        $this->prepareQuery('DELETE FROM CHATMESSAGE WHERE id_message = ?');
+        $this->executeQuery(array($idMessage));
+        $this->closeQuery();
+
+        return true;
+    }
+
+    public function deleteConversation(int $idAccount, int $idDevice) : void {
+        $this->prepareQuery('DELETE FROM CHATMESSAGE
+            WHERE (id_sender = ? AND id_receiver = ?)
+            OR (id_sender = ? AND id_receiver = ?)');
+
+        $this->executeQuery(array($idAccount, $idDevice, $idDevice, $idAccount));
+        $this->closeQuery();
     }
 }

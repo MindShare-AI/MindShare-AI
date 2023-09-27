@@ -19,6 +19,8 @@ RESTFUL API to access to the database of the MindShare application
 > - /post/comments/{id_post}
 > - /post/stats/{id_account}
 
+> - /messages/{id_account}/{id_device}
+
 ### POST
 > - /device |||| {'uuid' => [id_device_to_add]}
 
@@ -28,8 +30,13 @@ RESTFUL API to access to the database of the MindShare application
 
 > - /post |||| {'message' => [message], ...}
 
+> - /messages |||| {'message' => [message], ...}
+
 ### DELETE
 > - /account/{id}
 > - /account/{last_name}/{first_name}
 
 > - /post/{id}
+
+> - /messages/{id}
+> - /messages/{id_account}/{id_device}
