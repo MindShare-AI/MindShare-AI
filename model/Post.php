@@ -38,8 +38,8 @@ final class Post {
     private int $idPost;
     private int $idAccount;
     private string $message;
-    private DateTime $sendDate;
-    private int $idPostCommented;
+    private string $sendDate;
+    private int|null $idPostCommented;
 
 
     // CONSTRUCTOR
@@ -49,12 +49,12 @@ final class Post {
      * @param int $idPost The id (PRIMARY KEY) of the post.
      * @param int $idAccount The id (FOREIGN KEY) of the account that sent the post.
      * @param string $message The text message of the post.
-     * @param DateTime $date The date when the post was published.
+     * @param string $date The date when the post was published.
      * @param int|null $idPostCommented The post identifier (FOREIGN KEY) of the post
      *                                  if this post is a comment in response to another post.
      */
     public function __construct(int $idPost, int $idAccount,
-                                string $message, DateTime $date, int $idPostCommented = null) {
+                                string $message, string $date, int $idPostCommented = null) {
 
         $this->idPost = $idPost;
         $this->idAccount = $idAccount;
@@ -95,9 +95,9 @@ final class Post {
     /**
      * This method is the getter of the 'sendDate' attribute.
      *
-     * @return DateTime The date when the post was published.
+     * @return string The date when the post was published.
      */
-    public function getSendDate(): DateTime {
+    public function getSendDate(): string {
         return $this->sendDate;
     }
 
@@ -143,9 +143,9 @@ final class Post {
     /**
      * This method is the setter of the 'sendDate' attribute.
      *
-     * @param DateTime $sendDate The date when the post was published.
+     * @param string $sendDate The date when the post was published.
      */
-    public function setSendDate(DateTime $sendDate): void {
+    public function setSendDate(string $sendDate): void {
         $this->sendDate = $sendDate;
     }
 

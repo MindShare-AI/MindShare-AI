@@ -43,7 +43,7 @@ final class PostControl extends BaseController {
     // CONSTRUCTOR
     public function __construct(array $config, string $requestMethod) {
         parent::__construct($requestMethod);
-        $this->dbAccess = new PostAccess($config['account_identifier'], $config['account_password']);
+        $this->dbAccess = new PostAccess($config['posts_identifier'], $config['posts_password']);
     }
 
 
@@ -69,7 +69,7 @@ final class PostControl extends BaseController {
 
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'Bad uri parameters format'));
+                echo json_encode(array('response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
                 die();
             }
 
@@ -82,17 +82,17 @@ final class PostControl extends BaseController {
 
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'Bad uri parameters format'));
+                echo json_encode(array('response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
                 die();
             }
         } else {
             http_response_code(404);
-            echo json_encode(array('response' => 'http request method not allowed for "/account"'));
+            echo json_encode(array('response' => 'http request method not allowed for "/account"'), JSON_PRETTY_PRINT);
             die();
         }
 
         http_response_code($response[0]);
-        echo json_encode($response[1]);
+        echo json_encode($response[1], JSON_PRETTY_PRINT);
     }
 
 

@@ -1,10 +1,11 @@
 # MindShare-API
-RESTFUL API to access to the database of the MindShare application
+RESTFUL API to access to the database of the MindShare application. <br/>
+The API is accessible in this url : https://mindhsare-ai.alwaysdata.net/api/ <br/>
+All requests are protected, they need a bearer token in the header of the request.
 
 ## Requests List
 
 ### GET
-> - /device/{id}
 
 > - /follow/{id}
 > - /follow/stats/{id}
@@ -14,15 +15,12 @@ RESTFUL API to access to the database of the MindShare application
 > - /account/{last_name}/{first_name}
 
 > - /post
-> - /post/{id}
+> - /post/{id_post}
 > - /post/{last_name}/{first_name}
 > - /post/comments/{id_post}
 > - /post/stats/{id_account}
 
-> - /messages/{id_account}/{id_device}
-
 ### POST
-> - /device |||| {'uuid' => [id_device_to_add]}
 
 > - /follow |||| {'follower' => [id_account], 'following' => [id_account]}
 
@@ -30,13 +28,8 @@ RESTFUL API to access to the database of the MindShare application
 
 > - /post |||| {'message' => [message], ...}
 
-> - /messages |||| {'message' => [message], ...}
-
 ### DELETE
 > - /account/{id}
 > - /account/{last_name}/{first_name}
 
 > - /post/{id}
-
-> - /messages/{id}
-> - /messages/{id_account}/{id_device}

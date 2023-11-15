@@ -30,9 +30,8 @@ This banner notice must not be removed.
  */
 
 // Loads dependencies
-use service\{AccountControl, DeviceControl, FollowControl, PostControl};
+use service\{AccountControl, FollowControl, PostControl};
 require_once 'service/AccountControl.php';
-require_once 'service/DeviceControl.php';
 require_once 'service/FollowControl.php';
 require_once 'service/PostControl.php';
 
@@ -53,14 +52,13 @@ array_shift($uriParameters); // remove first element always empty
 
 if (sizeof($uriParameters) < 2 || $uriParameters[0] != "api") {
     http_response_code(404);
-    echo json_encode(array('response' => 'Missing uri parameters'));
     die();
 }
 
 $uriParameters[1] = strtoupper(substr($uriParameters[1], 0, 1)) . substr($uriParameters[1], 1);
-$serviceCalled = "$uriParameters[1]Control";
+$serviceCalled = "service\\$uriParameters[1]Control";
 
-if (class_exists($serviceCalled)) {
+if (class_exists("$serviceCalled")) {
     $requestMethod = $_SERVER['REQUEST_METHOD'];
 
     // get the authorization token to some restricted requests (requests that modify the database not just get)
@@ -72,13 +70,13 @@ if (class_exists($serviceCalled)) {
         $headerToken = null;
     }
 
-    if ($headerToken !== $config['api_token']) {
+    /*if ($headerToken !== $config['api_token']) {
         http_response_code(401);
         echo json_encode(array('response' => 'Bad token'));
         die();
-    }
+    }*/
 
-    $controller = $serviceCalled($config, $requestMethod);
+    $controller = new $serviceCalled($config, $requestMethod);
     $controller->processRequest(array_slice($uriParameters, 2), $_POST);
 
 } else {

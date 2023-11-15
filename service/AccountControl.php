@@ -40,7 +40,7 @@ final class AccountControl extends BaseController {
     // CONSTRUCTOR
     public function __construct(array $config, string $requestMethod) {
         parent::__construct($requestMethod);
-        $this->dbAccess = new AccountAccess($config['account_identifier'], $config['account_password']);
+        $this->dbAccess = new AccountAccess($config['accounts_identifier'], $config['accounts_password']);
     }
 
 
@@ -49,7 +49,7 @@ final class AccountControl extends BaseController {
         if ($this->requestMethod === 'GET') {
             if (count($uriParameters) > 2) {
                 http_response_code(400);
-                echo json_encode(array('response' => 'wrong post parameters'));
+                echo json_encode(array('response' => 'wrong post parameters'), JSON_PRETTY_PRINT);
                 die();
 
             } else if (count($uriParameters) === 0) {
@@ -67,17 +67,17 @@ final class AccountControl extends BaseController {
 
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'Bad uri parameters format'));
+                echo json_encode(array('response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
                 die();
             }
         } else {
             http_response_code(404);
-            echo json_encode(array('response' => 'http request method not allowed for "/account"'));
+            echo json_encode(array('response' => 'http request method not allowed for "/account"'), JSON_PRETTY_PRINT);
             die();
         }
 
         http_response_code($response[0]);
-        echo json_encode($response[1]);
+        echo json_encode($response[1], JSON_PRETTY_PRINT);
     }
 
 
@@ -103,10 +103,10 @@ final class AccountControl extends BaseController {
         $response = array();
         if (is_null($account)) {
             $response[] = 202;
-            $response[] = array('response' => "Given account can't be remove");
+            $response[] = array('response' => "Given account doesn't exists");
         } else {
             $response[] = 200;
-            $response[] = array('response' => 'ok');
+            $response[] = $account->toArray();
         }
 
         return $response;

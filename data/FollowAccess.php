@@ -46,14 +46,14 @@ final class FollowAccess extends DataAccess {
         $following = array();
 
         // send sql request
-        $this->prepareQuery('SELECT * FROM Follow WHERE id_account_follower = ?');
+        $this->prepareQuery('SELECT * FROM Follow WHERE id_follower = ?');
         $this->executeQuery(array($idAccount));
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $following[] = $row['id_account_followed'];
+            $following[] = $row['id_following'];
         }
 
         return $following;
@@ -68,11 +68,11 @@ final class FollowAccess extends DataAccess {
      */
     public function getFollowsCount(int $idAccount): int {
         // send sql request
-        $this->prepareQuery('SELECT COUNT(*) FROM Follow WHERE id_account_following = ?');
+        $this->prepareQuery('SELECT COUNT(*) FROM Follow WHERE id_follower = ?');
         $this->executeQuery(array($idAccount));
 
         // get the response
-        $result = $this->getQueryResult();
+        $result = $this->getQueryResult()[0];
 
         return $result[0];
     }
@@ -88,14 +88,14 @@ final class FollowAccess extends DataAccess {
         $followers = array();
 
         // send sql request
-        $this->prepareQuery('SELECT * FROM Follow WHERE id_account_followed = ?');
+        $this->prepareQuery('SELECT * FROM Follow WHERE id_following = ?');
         $this->executeQuery(array($idAccount));
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $followers[] = $row['id_account_follower'];
+            $followers[] = $row['id_follower'];
         }
 
         return $followers;
@@ -110,11 +110,11 @@ final class FollowAccess extends DataAccess {
      */
     public function getFollowersCount(int $idAccount): int {
         // send sql request
-        $this->prepareQuery('SELECT COUNT(*) FROM Follow WHERE id_account_followed = ?');
+        $this->prepareQuery('SELECT COUNT(*) FROM Follow WHERE id_following = ?');
         $this->executeQuery(array($idAccount));
 
         // get the response
-        $result = $this->getQueryResult();
+        $result = $this->getQueryResult()[0];
 
         return $result[0];
     }

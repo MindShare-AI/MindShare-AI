@@ -47,7 +47,7 @@ final class PostAccess extends DataAccess {
         $posts = array();
 
         // send sql request
-        $this->prepareQuery('SELECT * FROM POST');
+        $this->prepareQuery('SELECT * FROM Post');
         $this->executeQuery(array());
 
         // get the response
@@ -61,7 +61,7 @@ final class PostAccess extends DataAccess {
     }
 
     public function getPost(int $idPost) : ?Post {
-        $this->prepareQuery('SELECT * FROM POST WHERE id_post = ?');
+        $this->prepareQuery('SELECT * FROM Post WHERE id_post = ?');
         $this->executeQuery(array($idPost));
 
         $result = $this->getQueryResult();
@@ -84,15 +84,21 @@ final class PostAccess extends DataAccess {
     public function getPostsOfAccount(string $lastName, string $firstName) : array {
         $posts = array();
 
-        // send sql request
-        $this->prepareQuery('SELECT * FROM POST WHERE last_name = ? AND first_name = ?');
+        // get the id account to find the posts with the last and first name
+        $this->prepareQuery('SELECT * FROM Account WHERE last_name = ? AND first_name = ?');
         $this->executeQuery(array($lastName, $firstName));
+
+        $idAccount = $this->getQueryResult()[0]['id_account'];
+
+        // send sql request
+        $this->prepareQuery('SELECT * FROM Post WHERE id_account = ?');
+        $this->executeQuery(array($idAccount));
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $posts = Post::fromArray($row);
+            $posts[] = Post::fromArray($row);
         }
 
         return $posts;
@@ -109,29 +115,29 @@ final class PostAccess extends DataAccess {
         $comments = array();
 
         // send sql request
-        $this->prepareQuery('SELECT * FROM POST WHERE id_post_commented = ?');
+        $this->prepareQuery('SELECT * FROM Post WHERE id_post_commented = ?');
         $this->executeQuery(array($idPost));
 
         // get the response
         $result = $this->getQueryResult();
 
         foreach ($result as $row) {
-            $comments = Post::fromArray($row);
+            $comments[] = Post::fromArray($row);
         }
 
         return $comments;
     }
 
     public function getStatsOfAccount(int $idAccount) : array {
-        $this->prepareQuery('SELECT COUNT(*) FROM POST WHERE id_account = ? AND id_post_commented IS NULL');
+        $this->prepareQuery('SELECT COUNT(*) FROM Post WHERE id_account = ? AND id_post_commented IS NULL');
         $this->executeQuery(array($idAccount));
 
-        $nbPosts = $this->getQueryResult();
+        $nbPosts = $this->getQueryResult()[0][0];
 
-        $this->prepareQuery('SELECT COUNT(*) FROM POST WHERE id_account = ? AND id_post_commented IS NOT NULL');
+        $this->prepareQuery('SELECT COUNT(*) FROM Post WHERE id_account = ? AND id_post_commented IS NOT NULL');
         $this->executeQuery(array($idAccount));
 
-        $nbCommentaries = $this->getQueryResult();
+        $nbCommentaries = $this->getQueryResult()[0][0];
 
         return array('nb_posts' => $nbPosts, 'nb_comments' => $nbCommentaries);
     }
@@ -142,14 +148,14 @@ final class PostAccess extends DataAccess {
         $idAccount = $postData['id_account'];
         $idPostCommented = in_array('id_post_commented', $postData) ? $postData['id_post_commented'] : null;
 
-        $this->prepareQuery('INSERT INTO POST (id_account, message, send_date, id_post_commented) VALUES (?, ?, ?, ?)');
+        $this->prepareQuery('INSERT INTO Post (id_account, message, send_date, id_post_commented) VALUES (?, ?, ?, ?)');
         $this->executeQuery(array($idAccount, $message, $sendDate, $idPostCommented));
         $this->closeQuery();
     }
 
     public function deletePost(int $idPost) : bool {
         // check if the post exists
-        $this->prepareQuery('SELECT * FROM POST WHERE id_post = ?');
+        $this->prepareQuery('SELECT * FROM Post WHERE id_post = ?');
         $this->executeQuery(array($idPost));
 
         $result = $this->getQueryResult();
@@ -159,11 +165,11 @@ final class PostAccess extends DataAccess {
         }
 
         // delete the post and there commentaries
-        $this->prepareQuery('DELETE FROM POST WHERE id_post = ?');
+        $this->prepareQuery('DELETE FROM Post WHERE id_post = ?');
         $this->executeQuery(array($idPost));
         $this->closeQuery();
 
-        $this->prepareQuery('DELETE FROM POST WHERE id_post_commented = ?');
+        $this->prepareQuery('DELETE FROM Post WHERE id_post_commented = ?');
         $this->executeQuery(array($idPost));
         $this->closeQuery();
 

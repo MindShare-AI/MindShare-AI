@@ -46,8 +46,8 @@ final class FollowControl extends BaseController {
     public function __construct(array $config, string $requestMethod) {
         parent::__construct($requestMethod);
 
-        $this->dbAccess = new FollowAccess($config['account_identifier'], $config['account_password']);
-        $this->accountAccess = new AccountAccess($config['account_identifier'], $config['account_password']);
+        $this->dbAccess = new FollowAccess($config['accounts_identifier'], $config['accounts_password']);
+        $this->accountAccess = new AccountAccess($config['accounts_identifier'], $config['accounts_password']);
     }
 
 
@@ -58,11 +58,11 @@ final class FollowControl extends BaseController {
                 $response = $this->statsRequest($uriParameters[1]);
 
             } else if (count($uriParameters) === 1) {
-                $response = $this->getRequest($uriParameters[1]);
+                $response = $this->getRequest($uriParameters[0]);
 
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'Bad uri parameters format'));
+                echo json_encode(array('response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
                 die();
             }
         } else if ($this->requestMethod === 'POST') {
@@ -74,25 +74,25 @@ final class FollowControl extends BaseController {
 
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'wrong post parameters'));
+                echo json_encode(array('response' => 'wrong post parameters'), JSON_PRETTY_PRINT);
                 die();
             }
 
         } else {
             http_response_code(404);
-            echo json_encode(array('response' => 'http request method not allowed for "/follow"'));
+            echo json_encode(array('response' => 'http request method not allowed for "/follow"'), JSON_PRETTY_PRINT);
             die();
         }
 
         http_response_code($response[0]);
-        echo json_encode($response[1]);
+        echo json_encode($response[1], JSON_PRETTY_PRINT);
     }
 
 
     // PRIVATE METHODS
     private function statsRequest(int $idAccount) : array {
         $followersCount = $this->dbAccess->getFollowersCount($idAccount);
-        $followingCount = $this->dbAccess->getFollowingAccounts($idAccount);
+        $followingCount = $this->dbAccess->getFollowsCount($idAccount);
 
         $response = array(
             'followers' => $followersCount,
@@ -111,14 +111,14 @@ final class FollowControl extends BaseController {
             'following' => array()
         );
 
-        foreach ($followers as $idAccount) {
-            $currentAccount = $this->accountAccess->getAccountByID($idAccount);
-            $response['followers'][] = $currentAccount->toJson();
+        foreach ($followers as $currentID) {
+            $currentAccount = $this->accountAccess->getAccountByID($currentID);
+            $response['followers'][] = $currentAccount->toArray();
         }
 
-        foreach ($following as $idAccount) {
-            $currentAccount = $this->accountAccess->getAccountByID($idAccount);
-            $response['following'][] = $currentAccount;
+        foreach ($following as $currentID) {
+            $currentAccount = $this->accountAccess->getAccountByID($currentID);
+            $response['following'][] = $currentAccount->toArray();
         }
 
         return array(200, $response);
