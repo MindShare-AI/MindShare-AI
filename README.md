@@ -1,6 +1,6 @@
 # MindShare-API
 RESTFUL API to access to the database of the MindShare application. <br/>
-The API is accessible in this url : https://mindhsare-ai.alwaysdata.net/api/ <br/>
+The API is accessible in this url : https://mindshare-ai.alwaysdata.net/api/ <br/>
 All requests are protected, they need a bearer token in the header of the request.
 
 ## Requests List
