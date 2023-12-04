@@ -65,12 +65,12 @@ const POSTS = array(
 
 // Loads dependencies
 use model\{Account, Post};
-require_once 'model/Account.php';
-require_once 'model/Post.php';
+require_once getcwd() . 'model/Account.php';
+require_once getcwd() . 'model/Post.php';
 
 use data\{AccountAccess, PostAccess};
-require_once 'data/AccountAccess.php';
-require_once 'data/PostAccess.php';
+require_once getcwd() . 'data/AccountAccess.php';
+require_once getcwd() . 'data/PostAccess.php';
 
 // Loads the .ini file that contains the database identifiers
 $config = parse_ini_file('config.ini');
