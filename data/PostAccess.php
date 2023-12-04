@@ -143,13 +143,13 @@ final class PostAccess extends DataAccess {
     }
 
     public function addPost(array $postData) : void {
-        $message = in_array('message', $postData) ? $postData['message'] : '';
-        $sendDate = in_array('send_date', $postData) ? $postData['send_date'] : date('Y-m-d');
+        $message = array_key_exists('message', $postData) ? $postData['message'] : '';
+        $sendDate = array_key_exists('send_date', $postData) ? $postData['send_date'] : date('Y-m-d');
         $idAccount = $postData['id_account'];
-        $idPostCommented = in_array('id_post_commented', $postData) ? $postData['id_post_commented'] : null;
+        $idPostCommented = array_key_exists('id_post_commented', $postData) ? $postData['id_post_commented'] : null;
 
-        $this->prepareQuery('INSERT INTO Post (id_account, message, send_date, id_post_commented) VALUES (?, ?, ?, ?)');
-        $this->executeQuery(array($idAccount, $message, $sendDate, $idPostCommented));
+        $this->prepareQuery('INSERT INTO Post (message, send_date, id_account, id_post_commented) VALUES (?, ?, ?, ?)');
+        $this->executeQuery(array($message, $sendDate, $idAccount, $idPostCommented));
         $this->closeQuery();
     }
 

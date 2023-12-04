@@ -113,7 +113,7 @@ final class AccountControl extends BaseController {
     }
 
     private function addAccount(array $accountData) : array {
-        if (in_array('last_name', $accountData) && in_array('first_name', $accountData)) {
+        if (array_key_exists('last_name', $accountData) && array_key_exists('first_name', $accountData)) {
             $account = $this->dbAccess->getAccountByName($accountData['last_name'], $accountData['first_name']);
 
             if (is_null($account)) {

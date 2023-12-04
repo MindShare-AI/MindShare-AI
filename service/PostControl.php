@@ -149,7 +149,7 @@ final class PostControl extends BaseController {
     }
 
     private function addPost(array $postData) : array {
-        if (in_array('id_account', $postData)) {
+        if (array_key_exists('id_account', $postData)) {
             $this->dbAccess->addPost($postData);
             $response = array(200, array('response' => 'ok'));
 

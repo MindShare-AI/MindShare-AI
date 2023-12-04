@@ -39,7 +39,7 @@ final class Account {
     private string $lastName;
     private string $firstName;
     private int $yearsOld;
-    private string $biography;
+    private ?string $biography;
 
 
     // CONSTRUCTOR
@@ -50,10 +50,10 @@ final class Account {
      * @param string $lastName The last name of the account.
      * @param string $firstName The first name of the account.
      * @param int $yearsOld The years old of the account.
-     * @param string $bio The biography (short text presentation) of the account.
+     * @param string|null $bio The biography (short text presentation) of the account.
      */
     public function __construct(int $id, string $lastName, string $firstName,
-                                int $yearsOld, string $bio) {
+                                int $yearsOld, ?string $bio) {
 
         $this->idAccount = $id;
         $this->lastName = $lastName;
@@ -104,9 +104,9 @@ final class Account {
     /**
      * This method is the getter of the 'biography' attribute.
      *
-     * @return string A short text to present the account.
+     * @return string|null A short text to present the account.
      */
-    public function getBiography(): string {
+    public function getBiography(): ?string {
         return $this->biography;
     }
 

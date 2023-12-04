@@ -30,10 +30,11 @@ This banner notice must not be removed.
  */
 
 // Loads dependencies
-use service\{AccountControl, FollowControl, PostControl};
+use service\{AccountControl, FollowControl, PostControl, ScheduleTaskControl};
 require_once 'service/AccountControl.php';
 require_once 'service/FollowControl.php';
 require_once 'service/PostControl.php';
+require_once 'service/ScheduleTaskControl.php';
 
 header('Content-Type: application/json');
 

@@ -115,8 +115,8 @@ final class AccountAccess extends DataAccess {
     public function addAccount(array $accountData) : void {
         $lastName = $accountData['last_name'];
         $firstName = $accountData['first_name'];
-        $years_old = in_array('years_old', $accountData) ? $accountData['years_old'] : 0;
-        $biography = in_array('biography', $accountData) ? $accountData['biography'] : '';
+        $years_old = array_key_exists('years_old', $accountData) ? $accountData['years_old'] : 0;
+        $biography = array_key_exists('biography', $accountData) ? $accountData['biography'] : '';
 
         $this->prepareQuery('INSERT INTO ACCOUNT (last_name, first_name, years_old, biography) VALUES (?, ?, ?, ?)');
         $this->executeQuery(array($lastName, $firstName, $years_old, $biography));
