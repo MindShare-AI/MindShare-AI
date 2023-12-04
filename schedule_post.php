@@ -82,12 +82,12 @@ if (!$config) { // file doesn't found or not parsable
 }
 
 // Choosing random post
-$randomPost = POSTS[rand(0, count(POSTS))];
+$randomPost = POSTS[rand(0, count(POSTS) - 1)];
 
 // Choosing account that posts
 $accountAccess = new AccountAccess($config['accounts_identifier'], $config['accounts_password']);
 $accounts = $accountAccess->getAllAccounts();
-$randomAccount = $accounts[rand(0, count($accounts))];
+$randomAccount = $accounts[rand(0, count($accounts) - 1)];
 
 // send the new post
 $newPost = new Post(-1, $randomAccount->getIdAccount(), $randomPost, date('Y-m-d'));
