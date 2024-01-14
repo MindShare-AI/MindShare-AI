@@ -7,7 +7,7 @@
 
 -------------------------------------------------------------------------
 
-Copyright (C) 2023 MindShare-AI
+Copyright (C) 2023-2024 MindShare-AI
 
 Use of this software is governed by the GNU Public License, version 3.
 

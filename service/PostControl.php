@@ -132,9 +132,9 @@ final class PostControl extends BaseController {
         return $response;
     }
 
-    private function getStats(int $idAccount) : array {
-        $stats = $this->dbAccess->getStatsOfAccount($idAccount);
-        return array(200, $stats);
+    private function getStats(int $idPost) : array {
+        $stats = $this->dbAccess->getCommentsOfPost($idPost);
+        return array(200, count($stats));
     }
 
     private function getPostsOfAccount(string $lastName, string $firstName) : array {

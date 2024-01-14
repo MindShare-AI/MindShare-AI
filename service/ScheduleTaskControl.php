@@ -43,39 +43,6 @@ require_once 'data/PostAccess.php';
 
 final class ScheduleTaskControl extends BaseController {
     // FIELDS
-    private static array $POSTS = array(
-        "Le café d'abord, la vie d'adulte ensuite.",
-        "C'est déjà vendredi ?",
-        "J'ai besoin de plus d'heures dans la journée.",
-        "Pourquoi mon téléphone est-il toujours en batterie faible ?",
-        "Encore un épisode, et je serai productif.",
-        "Encore des embouteillages ? Sérieusement ?",
-        "Je devrais vraiment boire plus d'eau aujourd'hui.",
-        "Où ai-je mis mes clés ?",
-        "Note à moi-même : faire les courses après le travail",
-        "Je mérite de me faire plaisir aujourd'hui.",
-        "J'aimerais avoir plus de temps pour lire.",
-        "J'ai besoin de vacances.",
-        "Pourquoi est-ce si difficile de prendre des décisions pour le dîner ?",
-        "Faisons en sorte qu'aujourd'hui soit une bonne journée pour les cheveux.",
-        "Dois-je vraiment être adulte aujourd'hui ?",
-        "Je commencerai mon régime demain.",
-        "Pourquoi tout le monde est-il pressé ?",
-        "Le week-end me manque déjà.",
-        "Je devrais appeler ma mère, mon père ou mon ami.",
-        "J'ai besoin d'une pause dans les médias sociaux.",
-        "Encore quelques minutes de sommeil, s'il vous plaît.",
-        "Je devrais peut-être essayer de préparer des repas.",
-        "J'aimerais pouvoir travailler à domicile tous les jours.",
-        "Je n'ai rien à me mettre.",
-        "Je devrais faire de l'exercice... ou pas.",
-        "Pourquoi le jour de la lessive est-il toujours aussi accablant ?",
-        "Je n'arrive pas à croire que nous sommes déjà en décembre.",
-        "J'ai besoin d'une nouvelle playlist pour mon trajet.",
-        "Je devrais apprendre à cuisiner cette recette.",
-        "J'ai hâte de me détendre et de me relaxer ce soir."
-    );
-
     private AccountAccess $accountAccess;
 
 
@@ -91,12 +58,21 @@ final class ScheduleTaskControl extends BaseController {
     // PUBLIC METHODS
     public function processRequest(array $uriParameters, array $postParams): void {
         if ($this->requestMethod === 'GET') {
-            if (count($uriParameters) === 0) {
-                $this->sendAutomaticPost();
-                $response = array(200, array('response' => 'ok'));
+            if (count($uriParameters) === 1) {
+                if ($uriParameters[0] === "post") {
+                    $this->sendAutomaticPost();
+                    $response = array(200, array('response' => 'ok'));
+
+                } else if ($uriParameters[0] === "comment") {
+                    $this->sendAutomaticComment();
+                    $response = array(200, array('response' => 'ok'));
+
+                } else {
+                    $response = array(400, array('response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
+                }
             } else {
                 http_response_code(400);
-                echo json_encode(array('response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
+                echo json_encode(array(400, 'response' => 'Bad uri parameters format'), JSON_PRETTY_PRINT);
                 die();
             }
         } else {
@@ -112,8 +88,12 @@ final class ScheduleTaskControl extends BaseController {
 
     // PRIVATE METHODS
     private function sendAutomaticPost(): void {
+        // get all posts generated
+        $postFile = file_get_contents('generated_posts.json');
+        $posts = json_decode($postFile);
+
         // choosing random post
-        $randomPost = ScheduleTaskControl::$POSTS[rand(0, count(ScheduleTaskControl::$POSTS) - 1)];
+        $randomPost = $posts[rand(0, count($posts) - 1)];
 
         // choosing account that posts
         $accounts = $this->accountAccess->getAllAccounts();
@@ -122,5 +102,31 @@ final class ScheduleTaskControl extends BaseController {
         // send the new post
         $newPost = new Post(-1, $randomAccount->getIdAccount(), $randomPost, date('Y-m-d'));
         $this->dbAccess->addPost($newPost->toArray());
+    }
+
+    private function sendAutomaticComment(): void {
+        // get all comments generated
+        $commentFile = file_get_contents('generated_comments.json');
+        $comments = json_decode($commentFile);
+
+        // choosing random comment
+        $randomComment = $comments[rand(0, count($comments) - 1)];
+
+        // choosing post to respond
+        $posts = $this->dbAccess->getAllPosts();
+        $randomPost = $posts[rand(0, count($posts) - 1)];
+
+        // choosing account that posts
+        $accounts = $this->accountAccess->getAllAccounts();
+        $randomAccount = $accounts[rand(0, count($accounts) - 1)];
+
+        // send the new comment
+        $newComment = new Post(-1,
+            $randomAccount->getIdAccount(),
+            $randomComment,
+            date('Y-m-d'),
+            $randomPost->getIdPost());
+
+        $this->dbAccess->addPost($newComment->toArray());
     }
 }
